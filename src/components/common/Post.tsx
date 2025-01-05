@@ -115,7 +115,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
 
   const handleMainClick = (e: MouseEvent<HTMLDivElement>) => {
     if (!(e.target as HTMLElement).closest(".no-nav")) {
-      nav(`/post?postId=${post.id}&userId=${post.authorId}`);
+      nav(`/post?postId=${post.id}`);
     }
   };
 
