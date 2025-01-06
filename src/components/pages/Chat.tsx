@@ -2,6 +2,7 @@ import ChatWindow from "@/components/common/ChatWindow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const users = [
   { id: 1, name: "Hưng", status: "Online", avatar: "/bob-avatar.svg" },
@@ -11,21 +12,20 @@ const users = [
   { id: 5, name: "Sinh", status: "Online", avatar: "/alice-avatar.svg" },
 ];
 const Chat = () => {
-  const [isChatting, setIsChatting] = useState(false);
   const [selectedUser, setSelectedUser] = useState("");
+  const nav = useNavigate();
+  const [params] = useSearchParams();
+  const chatId = params.get("chatId");
+  console.log(chatId);
 
   const handleSelectChat = ({ userName }: { userName: string }) => {
-    setIsChatting(true);
     setSelectedUser(userName);
   };
 
   return (
     <div className="flex flex-col sm:flex-row min-h-screen dark:bg-black bg-white overflow-hidden">
-      {/* Sidebar Space */}
       <div className="hidden sm:block sm:w-16"></div>
-
-      {/* Chat List (Sidebar Replacement) */}
-      <div className="sm:w-96 w-full bg-gray-100 dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-900 flex flex-col pt-16 sm:pt-0">
+      <div className="sm:w-96 w-full bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-900 flex flex-col pt-16 sm:pt-0">
         <div className="p-4">
           <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
             Chats
@@ -37,7 +37,10 @@ const Chat = () => {
               <li
                 key={user.id}
                 className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-                onClick={() => handleSelectChat({ userName: user.name })}
+                onClick={() => {
+                  handleSelectChat({ userName: user.name });
+                  nav(`/chat?chatId=${user.id}`);
+                }}
               >
                 <Avatar className="w-10 h-10">
                   <AvatarImage
@@ -59,10 +62,8 @@ const Chat = () => {
           </ul>
         </ScrollArea>
       </div>
-
-      {/* Chat Window */}
       <div className="flex-1 flex flex-col pt-16 sm:pt-0 mt-10">
-        {isChatting ? (
+        {chatId ? (
           <div className="flex-1 flex justify-center px-4 py-6 overflow-y-auto">
             <ChatWindow userName={selectedUser} />
           </div>

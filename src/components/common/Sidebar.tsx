@@ -31,9 +31,9 @@ const Sidebar = () => {
           </a>
         </li>
         <li
-          onClick={() => {
-            nav("/notify"); // Navigate to the notifications page
-          }}
+          // onClick={() => {
+          //   nav("/notify"); // Navigate to the notifications page
+          // }}
           className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
         >
           <a className="flex items-center justify-center cursor-pointer relative">
@@ -44,9 +44,9 @@ const Sidebar = () => {
           </a>
         </li>
         <li
-          onClick={() => {
-            nav(`/`);
-          }}
+          // onClick={() => {
+          //   nav(`/`);
+          // }}
           className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
         >
           <a className="flex items-center justify-center cursor-pointer">

@@ -14,7 +14,7 @@ import { toast } from "sonner";
 const fakeAvt = `https://github.com/shadcn.png`;
 
 export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
-  const likeRef = useRef(post.liked);
+  const likeRef = useRef(post.likesCount);
   const [likeCount, setLikeCount] = useState(post.likesCount);
   const [isLiked, setIsLiked] = useState(post.liked);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -74,33 +74,31 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
 
   const throttle = useRef(false);
 
-  // const handleLike = async () => {
-  //   if (throttle.current) return;
+  const handleLike = async () => {
+    if (throttle.current) return;
 
-  //   throttle.current = true;
-  //   setTimeout(() => {
-  //     throttle.current = false;
-  //   }, 700);
+    throttle.current = true;
+    setTimeout(() => {
+      throttle.current = false;
+    }, 700);
 
-  //   setIsLiked((prev) => !prev);
+    setIsLiked((prev) => !prev);
 
-  //   try {
-  //     const res = await likeOrUnlikePost(post.id, post.authorId, !isLiked);
-
-  //     console.log(res);
-  //     if (isLiked) {
-  //       likeRef.current -= 1;
-  //       setLikeCount(likeRef.current);
-  //     } else {
-  //       likeRef.current += 1;
-  //       setLikeCount(likeRef.current);
-  //     }
-  //     onRefresh?.();
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Failed to update like status.");
-  //   }
-  // };
+    try {
+      const res = await likeOrUnlikePost(post.id);
+      if (isLiked) {
+        likeRef.current -= 1;
+        setLikeCount(likeRef.current);
+      } else {
+        likeRef.current += 1;
+        setLikeCount(likeRef.current);
+      }
+      onRefresh?.();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update like status.");
+    }
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -224,7 +222,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
         <div className="flex items-center mt-3 p-2 text-gray-500 dark:text-gray-200 text-sm">
           <div className="flex items-center p-1 mr-3 no-nav transition rounded-xl hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-slate-100 hover:rounded-xl dark:hover:bg-zinc-700 dark:hover:text-white">
             <HeartIcon
-              // onClick={handleLike}
+              onClick={handleLike}
               aria-hidden="true"
               className="h-6 w-6 mr-1 cursor-pointer no-nav"
               {...(isLiked ? { fill: "red", color: "red" } : { fill: "none" })}
