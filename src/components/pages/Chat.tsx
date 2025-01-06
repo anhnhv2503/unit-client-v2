@@ -1,25 +1,31 @@
 import ChatWindow from "@/components/common/ChatWindow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
+import { getCurrentChat } from "@/services/chatService";
+import { UserProps } from "@/types";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const users = [
-  { id: 1, name: "Hưng", status: "Online", avatar: "/bob-avatar.svg" },
-  { id: 2, name: "Tân", status: "Offline", avatar: "/charlie-avatar.svg" },
-  { id: 3, name: "Trung", status: "Online", avatar: "/dave-avatar.svg" },
-  { id: 4, name: "Trọng", status: "Offline", avatar: "/eve-avatar.svg" },
-  { id: 5, name: "Sinh", status: "Online", avatar: "/alice-avatar.svg" },
-];
 const Chat = () => {
-  const [selectedUser, setSelectedUser] = useState("");
+  const [chattingUsers, setChattingUsers] = useState<UserProps[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserProps>();
   const nav = useNavigate();
-  const [params] = useSearchParams();
-  const chatId = params.get("chatId");
-  console.log(chatId);
 
-  const handleSelectChat = ({ userName }: { userName: string }) => {
-    setSelectedUser(userName);
+  const getChats = async () => {
+    try {
+      const response = await getCurrentChat();
+      setChattingUsers(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getChats();
+  }, []);
+
+  const handleSelectChat = (user: UserProps) => {
+    setSelectedUser(user);
   };
 
   return (
@@ -33,28 +39,27 @@ const Chat = () => {
         </div>
         <ScrollArea className="flex-grow">
           <ul>
-            {users.map((user) => (
+            {chattingUsers.map((user) => (
               <li
                 key={user.id}
                 className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                 onClick={() => {
-                  handleSelectChat({ userName: user.name });
-                  nav(`/chat?chatId=${user.id}`);
+                  handleSelectChat(user);
+                  nav(`/chat`);
                 }}
               >
                 <Avatar className="w-10 h-10">
                   <AvatarImage
                     src={user.avatar || "/placeholder.svg"}
-                    alt={user.name}
+                    alt={user.firstName + " " + user.lastName}
                   />
-                  <AvatarFallback>{user.name[0].toUpperCase()}</AvatarFallback>
+                  <AvatarFallback>
+                    {user.lastName.charAt(0) + " " + user.firstName.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                    {user.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {user.status}
+                    {user.firstName + " " + user.lastName}
                   </p>
                 </div>
               </li>
@@ -63,9 +68,9 @@ const Chat = () => {
         </ScrollArea>
       </div>
       <div className="flex-1 flex flex-col pt-16 sm:pt-0 mt-10">
-        {chatId ? (
+        {selectedUser ? (
           <div className="flex-1 flex justify-center px-4 py-6 overflow-y-auto">
-            <ChatWindow userName={selectedUser} />
+            <ChatWindow user={selectedUser} />
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">

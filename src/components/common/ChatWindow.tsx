@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getMessages } from "@/services/chatService";
+import { UserProps } from "@/types";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -19,27 +21,8 @@ type Message = {
   timestamp: string;
 };
 
-const ChatWindow = ({ userName }: { userName: string }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: "Alice",
-      content: "Hey, how are you?",
-      timestamp: "10:00 AM",
-    },
-    {
-      id: 2,
-      sender: "You",
-      content: "Im good, thanks! How about you?",
-      timestamp: "10:02 AM",
-    },
-    {
-      id: 3,
-      sender: "Alice",
-      content: "Doing great! Excited about the new UNIT app features!",
-      timestamp: "10:05 AM",
-    },
-  ]);
+const ChatWindow = ({ user }: { user: UserProps }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -58,6 +41,23 @@ const ChatWindow = ({ userName }: { userName: string }) => {
       setNewMessage("");
     }
   };
+
+  const getMessagesInConversation = async (userId: number) => {
+    try {
+      // Fetch messages from the server
+      const response = await getMessages(userId);
+      setMessages(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      getMessagesInConversation(user.id);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -79,13 +79,17 @@ const ChatWindow = ({ userName }: { userName: string }) => {
         <div className="flex flex-row items-center gap-3 mx-auto">
           <Avatar>
             <AvatarImage
-              src="/placeholder.svg?height=40&width=40"
-              alt={userName}
+              src={user.avatar || "/placeholder.svg"}
+              alt={user.firstName + " " + user.lastName}
             />
-            <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+            <AvatarFallback>
+              {user.lastName.charAt(0) + " " + user.firstName.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="text-lg font-semibold">{userName}</h2>
+            <h2 className="text-lg font-semibold">
+              {user.firstName + " " + user.lastName}
+            </h2>
             <p className="text-sm text-muted-foreground">Online</p>
           </div>
         </div>

@@ -36,3 +36,15 @@ export interface MediaItem {
   url: string;
   type: "image" | "video";
 }
+
+export interface UserProps {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  avatar: string;
+  createdAt: string;
+  role: string;
+}
