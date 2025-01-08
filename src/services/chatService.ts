@@ -7,3 +7,9 @@ export const getCurrentChat = async () => {
 export const getMessages = async (userId: number) => {
   return axiosInstance.get(`chat/conversation/${userId}`);
 };
+
+export const sendMessage = async (conversationId: number, content: string) => {
+  return axiosInstance.post(`chat/send/message/${conversationId}`, {
+    content: content,
+  });
+};

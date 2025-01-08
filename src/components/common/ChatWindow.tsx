@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getMessages } from "@/services/chatService";
+import { getMessages, sendMessage } from "@/services/chatService";
 import { UserProps } from "@/types";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { Send } from "lucide-react";
@@ -16,9 +16,13 @@ import { useEffect, useRef, useState } from "react";
 
 type Message = {
   id: number;
-  sender: string;
+  conversationId: string;
+  senderId: number;
+  senderName: string;
+  senderAvatar: string;
   content: string;
-  timestamp: string;
+  createdAt: string;
+  mediaUrl: string;
 };
 
 const ChatWindow = ({ user }: { user: UserProps }) => {
@@ -26,28 +30,11 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const newMsg: Message = {
-        id: messages.length + 1,
-        sender: "You",
-        content: newMessage.trim(),
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-      setMessages([...messages, newMsg]);
-      setNewMessage("");
-    }
-  };
-
   const getMessagesInConversation = async (userId: number) => {
     try {
       // Fetch messages from the server
       const response = await getMessages(userId);
       setMessages(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -64,6 +51,20 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  const handleSendMessage = async (recipientId: number, content: string) => {
+    if (newMessage.trim()) {
+      try {
+        await sendMessage(recipientId, content);
+      } catch (error) {
+        console.error(error);
+      }
+      getMessagesInConversation(recipientId);
+      setNewMessage("");
+    }
+    // console.log(">>>", recipientId);
+    // console.log(">>>", content);
+  };
 
   return (
     <Card className="w-full h-[80vh] sm:h-[820px] flex flex-col">
@@ -101,18 +102,20 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
             <div
               key={message.id}
               className={`flex mb-4 ${
-                message.sender === "You" ? "justify-end mr-5" : "justify-start"
+                message.senderName === "You"
+                  ? "justify-end mr-5"
+                  : "justify-start"
               }`}
             >
               <div
-                className={`max-w-[85%] sm:max-w-[70%] rounded-lg p-3 ${
-                  message.sender === "You"
+                className={`max-w-[85%] sm:max-w-[70%] rounded-3xl p-3 ${
+                  message.senderName === "You"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}
               >
                 <p className="text-sm">{message.content}</p>
-                <p className="text-xs mt-1 opacity-70">{message.timestamp}</p>
+                <p className="text-xs mt-1 opacity-70">{message.createdAt}</p>
               </div>
             </div>
           ))}
@@ -124,7 +127,7 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            handleSendMessage();
+            handleSendMessage(user.id, newMessage);
           }}
           className="flex w-full items-center space-x-2"
         >

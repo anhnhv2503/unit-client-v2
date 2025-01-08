@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCurrentChat } from "@/services/chatService";
 import { UserProps } from "@/types";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
   const [chattingUsers, setChattingUsers] = useState<UserProps[]>([]);
