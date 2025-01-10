@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getMessages, sendMessage } from "@/services/chatService";
+import { getMessages } from "@/services/chatService";
 import { UserProps } from "@/types";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { over } from "stompjs";
+import SockJS from "sockjs-client";
 
 type Message = {
   id: number;
@@ -29,6 +30,8 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [stompClient, setStompClient] = useState<any>(null);
 
   const getMessagesInConversation = async (userId: number) => {
     try {
@@ -38,6 +41,51 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const registerWebSocket = () => {
+    let sock = new SockJS("http://localhost:8080/ws");
+    let stomp = over(sock);
+    stomp.connect({}, onConnected, onError);
+    setStompClient(stomp);
+  };
+
+  const onConnected = () => {
+    console.log("Connected to the chat server");
+    setIsConnected(true);
+    stompClient.subscribe("/topic/messages", onMessageReceived);
+  };
+
+  const onMessageReceived = (payload: any) => {
+    const message = JSON.parse(payload.body);
+    console.log("Message received: >>", message);
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
+
+  const onError = (error: any) => {
+    console.error("Error connecting to the chat server: >>", error);
+  };
+
+  useEffect(() => {
+    if (user) {
+      getMessagesInConversation(user.id);
+      registerWebSocket();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const handleSendMessage = async (recipientId: number, content: string) => {
+    const newMessage = {
+      recipientId: recipientId,
+      content: content,
+    };
+    stompClient.send("/app/chat", {}, JSON.stringify(newMessage));
+    setNewMessage("");
   };
 
   useEffect(() => {
@@ -52,31 +100,9 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
     }
   }, [messages]);
 
-  const handleSendMessage = async (recipientId: number, content: string) => {
-    if (newMessage.trim()) {
-      try {
-        await sendMessage(recipientId, content);
-      } catch (error) {
-        console.error(error);
-      }
-      getMessagesInConversation(recipientId);
-      setNewMessage("");
-    }
-    // console.log(">>>", recipientId);
-    // console.log(">>>", content);
-  };
-
   return (
-    <Card className="w-full h-[80vh] sm:h-[820px] flex flex-col">
+    <Card className="w-full h-[90vh] sm:h-[900px] flex flex-col">
       <CardHeader className="relative flex items-center gap-3 p-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 left-2 flex items-center justify-center"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-          <span className="sr-only">Go Back</span>
-        </Button>
         <div className="flex flex-row items-center gap-3 mx-auto">
           <Avatar>
             <AvatarImage
