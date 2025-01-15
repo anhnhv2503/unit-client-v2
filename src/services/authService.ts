@@ -54,10 +54,7 @@ export const resendConfirmRegister = async (email: string) => {
   return axiosInstance.get(`auth/Resend-Confirmation-Code?email=${email}`);
 };
 
-export const getUserProfile = async (user_id: string, isLogin: boolean) => {
-  if (isLogin) {
-    return axiosInstance.get(`user/p`);
-  }
+export const getOtherUserProfile = async (user_id: string) => {
   return axiosInstance.get(`user/p/${user_id}`);
 };
 
@@ -71,7 +68,7 @@ export const searchUser = async (searchKey: string) => {
   );
 };
 
-export const getUserAvatar = async () => {
+export const getAuthUserProfile = async () => {
   return axiosInstance.get("user/info");
 };
 

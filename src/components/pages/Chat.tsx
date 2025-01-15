@@ -1,4 +1,3 @@
-import ChatWindow from "@/components/common/ChatWindow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCurrentChat } from "@/services/chatService";
@@ -8,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
   const [chattingUsers, setChattingUsers] = useState<UserProps[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserProps>();
   const nav = useNavigate();
 
   const getChats = async () => {
@@ -23,10 +21,6 @@ const Chat = () => {
   useEffect(() => {
     getChats();
   }, []);
-
-  const handleSelectChat = (user: UserProps) => {
-    setSelectedUser(user);
-  };
 
   return (
     <div className="flex flex-col sm:flex-row min-h-screen dark:bg-black bg-white overflow-hidden">
@@ -44,8 +38,7 @@ const Chat = () => {
                 key={user.id}
                 className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                 onClick={() => {
-                  handleSelectChat(user);
-                  nav(`/chat`);
+                  nav(`/chat/c/d/${user.id}`);
                 }}
               >
                 <Avatar className="w-10 h-10">
@@ -68,15 +61,9 @@ const Chat = () => {
         </ScrollArea>
       </div>
       <div className="flex-1 flex flex-col pt-16 sm:pt-0 mt-10">
-        {selectedUser ? (
-          <div className="flex-1 flex justify-center px-4 py-6 overflow-y-auto">
-            <ChatWindow user={selectedUser} />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">Select a chat to start messaging.</p>
-          </div>
-        )}
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-500">Select a chat to start messaging.</p>
+        </div>
       </div>
     </div>
   );

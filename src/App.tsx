@@ -14,6 +14,7 @@ import { ResetPassword } from "./components/pages/ResetPassword";
 import { UserProfile } from "./components/pages/UserProfile";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import Chat from "@/components/pages/Chat";
+import ChatWindow from "@/components/common/ChatWindow";
 
 function App() {
   const router = createBrowserRouter([
@@ -56,6 +57,10 @@ function App() {
         {
           path: "/chat",
           element: <Chat />,
+        },
+        {
+          path: "/chat/c/d/:userId",
+          element: <ChatWindow />,
         },
         {
           path: "/user-profile/:id",

@@ -8,12 +8,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getOtherUserProfile } from "@/services/authService";
 import { getMessages } from "@/services/chatService";
 import { UserProps } from "@/types";
-import { Send } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { over } from "stompjs";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 type Message = {
   id: number;
@@ -26,16 +29,33 @@ type Message = {
   mediaUrl: string;
 };
 
-const ChatWindow = ({ user }: { user: UserProps }) => {
+const ChatWindow = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [stompClient, setStompClient] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<UserProps>();
+  const userId = useParams().userId;
+  const nav = useNavigate();
+  const [stompClient, setStompClient] = useState<any>();
 
-  const getMessagesInConversation = async (userId: number) => {
+  useEffect(() => {
+    const sock = new SockJS(`http://localhost:8080/ws`);
+    const stomp = Stomp.over(sock);
+    setStompClient(stomp);
+
+    stomp.connect({}, onConnect, onError);
+  }, []);
+
+  const onConnect = () => {
+    console.log("Connected to WebSocket >>D");
+  };
+
+  const onError = (error: any) => {
+    console.warn("MẸ KEEP LẠI LỖI! 3==D", error);
+  };
+
+  const getMessagesInConversation = async (userId: string) => {
     try {
-      // Fetch messages from the server
       const response = await getMessages(userId);
       setMessages(response.data);
     } catch (error) {
@@ -43,35 +63,19 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
     }
   };
 
-  const registerWebSocket = () => {
-    let sock = new SockJS("http://localhost:8080/ws");
-    let stomp = over(sock);
-    stomp.connect({}, onConnected, onError);
-    setStompClient(stomp);
-  };
-
-  const onConnected = () => {
-    console.log("Connected to the chat server");
-    setIsConnected(true);
-    stompClient.subscribe("/topic/messages", onMessageReceived);
-  };
-
-  const onMessageReceived = (payload: any) => {
-    const message = JSON.parse(payload.body);
-    console.log("Message received: >>", message);
-    setMessages((prevMessages) => [...prevMessages, message]);
-  };
-
-  const onError = (error: any) => {
-    console.error("Error connecting to the chat server: >>", error);
+  const getCurrentUser = async () => {
+    try {
+      const response = await getOtherUserProfile(userId!);
+      setCurrentUser(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    if (user) {
-      getMessagesInConversation(user.id);
-      registerWebSocket();
-    }
-  }, [user]);
+    getMessagesInConversation(userId!);
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -79,20 +83,13 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
     }
   }, [messages]);
 
-  const handleSendMessage = async (recipientId: number, content: string) => {
+  const handleSendMessage = (recipientId: string, content: string) => {
     const newMessage = {
-      recipientId: recipientId,
-      content: content,
+      recipientId,
+      content,
     };
-    stompClient.send("/app/chat", {}, JSON.stringify(newMessage));
-    setNewMessage("");
+    toast("Sending message..." + JSON.stringify(newMessage));
   };
-
-  useEffect(() => {
-    if (user) {
-      getMessagesInConversation(user.id);
-    }
-  }, [user]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -101,21 +98,31 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
   }, [messages]);
 
   return (
-    <Card className="w-full h-[90vh] sm:h-[900px] flex flex-col">
-      <CardHeader className="relative flex items-center gap-3 p-4">
-        <div className="flex flex-row items-center gap-3 mx-auto">
+    <Card className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto mt-20">
+      <div className="">
+        <Button
+          variant={"outline"}
+          onClick={() => nav(-1)}
+          className="p-2 border rounded-full"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </Button>
+      </div>
+      <CardHeader className="flex items-center justify-center p-4 space-y-0">
+        <div className="flex items-center gap-3">
           <Avatar>
             <AvatarImage
-              src={user.avatar || "/placeholder.svg"}
-              alt={user.firstName + " " + user.lastName}
+              src={currentUser?.avatar || "/placeholder.svg"}
+              alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
             />
             <AvatarFallback>
-              {user.lastName.charAt(0) + " " + user.firstName.charAt(0)}
+              {currentUser?.lastName.charAt(0)}
+              {currentUser?.firstName.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-lg font-semibold">
-              {user.firstName + " " + user.lastName}
+              {currentUser?.firstName} {currentUser?.lastName}
             </h2>
             <p className="text-sm text-muted-foreground">Online</p>
           </div>
@@ -123,18 +130,16 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
       </CardHeader>
 
       <CardContent className="flex-grow overflow-hidden p-4">
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-full pr-4">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex mb-4 ${
-                message.senderName === "You"
-                  ? "justify-end mr-5"
-                  : "justify-start"
+                message.senderName === "You" ? "justify-end" : "justify-start"
               }`}
             >
               <div
-                className={`max-w-[85%] sm:max-w-[70%] rounded-3xl p-3 ${
+                className={`max-w-[85%] rounded-2xl p-3 ${
                   message.senderName === "You"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
@@ -145,7 +150,7 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
               </div>
             </div>
           ))}
-          <div ref={messagesEndRef}></div>
+          <div ref={messagesEndRef} />
         </ScrollArea>
       </CardContent>
 
@@ -153,7 +158,10 @@ const ChatWindow = ({ user }: { user: UserProps }) => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            handleSendMessage(user.id, newMessage);
+            if (newMessage.trim()) {
+              handleSendMessage(userId!, newMessage);
+              setNewMessage("");
+            }
           }}
           className="flex w-full items-center space-x-2"
         >

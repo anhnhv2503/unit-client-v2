@@ -1,6 +1,6 @@
 import Loading from "@/components/common/loading/Loading";
 import { Post } from "@/components/common/Post";
-import { getUserAvatar } from "@/services/authService";
+import { getAuthUserProfile } from "@/services/authService";
 import { getPosts } from "@/services/postService";
 import { PostProps } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -20,7 +20,7 @@ const Home = () => {
   };
 
   const getAvatar = async () => {
-    const response = await getUserAvatar();
+    const response = await getAuthUserProfile();
     setUserAvatar(response.data.avatar);
   };
 

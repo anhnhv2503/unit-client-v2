@@ -2,7 +2,7 @@ import EditProfile from "@/components/common/EditProfile";
 import Loading from "@/components/common/loading/Loading";
 import { Post } from "@/components/common/Post";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { followUser, getUserProfile } from "@/services/authService";
+import { followUser } from "@/services/authService";
 import { getPostByUserId } from "@/services/postService";
 import { PostProps } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -66,28 +66,28 @@ export const UserProfile = () => {
 
   const closeModalFollow = () => setModalFollowOpen(false);
 
-  const getUserProfileData = async () => {
-    try {
-      const response = await getUserProfile(id!, isLogin);
-      const profileData = response.data;
-      if (!profileData.ProfilePicture) {
-        setUser({
-          ...profileData,
-          ProfilePicture: "https://github.com/shadcn.png",
-        });
-      } else {
-        setUser({
-          ...profileData,
-          ProfilePicture: `${
-            profileData.ProfilePicture
-          }?t=${new Date().getTime()}`, // Add timestamp
-        });
-      }
-      setIsFollow(profileData.isFollowed);
-    } catch (err) {
-      console.error("Failed to fetch user profile:", err);
-    }
-  };
+  // const getUserProfileData = async () => {
+  //   try {
+  //     const response = await getUserProfile(id!, isLogin);
+  //     const profileData = response.data;
+  //     if (!profileData.ProfilePicture) {
+  //       setUser({
+  //         ...profileData,
+  //         ProfilePicture: "https://github.com/shadcn.png",
+  //       });
+  //     } else {
+  //       setUser({
+  //         ...profileData,
+  //         ProfilePicture: `${
+  //           profileData.ProfilePicture
+  //         }?t=${new Date().getTime()}`, // Add timestamp
+  //       });
+  //     }
+  //     setIsFollow(profileData.isFollowed);
+  //   } catch (err) {
+  //     console.error("Failed to fetch user profile:", err);
+  //   }
+  // };
 
   const fetchPosts = async ({ pageParam }: { pageParam: number }) => {
     const res = await getPostByUserId(id!, pageParam);
@@ -107,7 +107,7 @@ export const UserProfile = () => {
     });
 
   useEffect(() => {
-    getUserProfileData();
+    // getUserProfileData();
   }, [isModalOpen, id]);
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export const UserProfile = () => {
       const form = new FormData();
       form.append("follow", id!);
       const response = await followUser(form);
-      getUserProfileData();
+      // getUserProfileData();
       console.log(response);
     } catch (err) {
       console.error("Failed to follow user:", err);
@@ -239,19 +239,19 @@ export const UserProfile = () => {
       </div>
     );
 
-  const content = data.pages.map((page) => {
-    return page.data.map((post: PostProps) => {
-      const currentPost = { ...post, profilePicture: user.ProfilePicture };
-      return (
-        <Post
-          key={post.postId}
-          post={currentPost}
-          innerRef={ref}
-          onRefresh={refetch}
-        />
-      );
-    });
-  });
+  // const content = data.pages.map((page) => {
+  //   return page.data.map((post: PostProps) => {
+  //     const currentPost = { ...post, profilePicture: user.ProfilePicture };
+  //     return (
+  //       <Post
+  //         key={post.postId}
+  //         post={currentPost}
+  //         innerRef={ref}
+  //         onRefresh={refetch}
+  //       />
+  //     );
+  //   });
+  // });
 
   return (
     <div className="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 dark:bg-black bg-white h-screen overflow-y-scroll no-scrollbar">
@@ -349,7 +349,7 @@ export const UserProfile = () => {
               <CreatePost avatar={user.ProfilePicture} onRefresh={refetch} />
             )}
           </div>
-          {content}
+          {/* {content} */}
         </div>
       </div>
     </div>
