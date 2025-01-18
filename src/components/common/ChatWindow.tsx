@@ -13,10 +13,11 @@ import { getMessages } from "@/services/chatService";
 import connectSocket from "@/services/socketService";
 import { UserProps } from "@/types";
 import { Client } from "@stomp/stompjs";
+import { jwtDecode } from "jwt-decode";
 import { ArrowLeft, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
+import moment from "moment";
 
 type Message = {
   id: number;
@@ -36,12 +37,16 @@ const ChatWindow = () => {
   const [currentUser, setCurrentUser] = useState<UserProps>();
   const userId = useParams().userId;
   const nav = useNavigate();
+  const decodedToken = jwtDecode<{ id: number }>(
+    localStorage.getItem("accessToken")!
+  );
+  const senderId = decodedToken.id;
 
   useEffect(() => {
     connectSocket((message: any) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-  }, []);
+  }, [userId]);
 
   const getMessagesInConversation = async (userId: string) => {
     try {
@@ -76,12 +81,13 @@ const ChatWindow = () => {
     const client: any = new Client({
       brokerURL: "ws://localhost:8080/ws",
       connectHeaders: {},
-      debug: () => console.log("LOL"),
+      debug: (str) => console.log(str),
       reconnectDelay: 5000,
       onConnect: () => {
         client.publish({
           destination: "/app/chat",
           body: JSON.stringify({
+            senderId,
             recipientId,
             content,
           }),
@@ -134,22 +140,24 @@ const ChatWindow = () => {
 
       <CardContent className="flex-grow overflow-hidden p-4">
         <ScrollArea className="h-full pr-4">
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <div
-              key={message.id}
+              key={index}
               className={`flex mb-4 ${
-                message.senderName === "You" ? "justify-end" : "justify-start"
+                message.senderId == senderId ? "justify-end" : "justify-start"
               }`}
             >
               <div
                 className={`max-w-[85%] rounded-2xl p-3 ${
-                  message.senderName === "You"
+                  message.senderId == senderId
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}
               >
                 <p className="text-sm">{message.content}</p>
-                <p className="text-xs mt-1 opacity-70">{message.createdAt}</p>
+                <p className="text-xs text-gray-500">
+                  {moment(message.createdAt).format("YYYY-MM-DD, h:mm:ss A")}
+                </p>
               </div>
             </div>
           ))}
