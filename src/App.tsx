@@ -15,9 +15,14 @@ import { UserProfile } from "./components/pages/UserProfile";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import Chat from "@/components/pages/Chat";
 import ChatWindow from "@/components/common/ChatWindow";
+import Test from "@/test/Test";
 
 function App() {
   const router = createBrowserRouter([
+    {
+      path: "/test",
+      element: <Test />,
+    },
     {
       path: "/login",
       element: <Login />,
