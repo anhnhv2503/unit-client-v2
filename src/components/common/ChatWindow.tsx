@@ -10,13 +10,13 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getOtherUserProfile } from "@/services/authService";
 import { getMessages } from "@/services/chatService";
+import connectSocket from "@/services/socketService";
 import { UserProps } from "@/types";
+import { Client } from "@stomp/stompjs";
 import { ArrowLeft, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 
 type Message = {
   id: number;
@@ -36,23 +36,12 @@ const ChatWindow = () => {
   const [currentUser, setCurrentUser] = useState<UserProps>();
   const userId = useParams().userId;
   const nav = useNavigate();
-  const [stompClient, setStompClient] = useState<any>();
 
   useEffect(() => {
-    const sock = new SockJS(`http://localhost:8080/ws`);
-    const stomp = Stomp.over(sock);
-    setStompClient(stomp);
-
-    stomp.connect({}, onConnect, onError);
+    connectSocket((message: any) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
   }, []);
-
-  const onConnect = () => {
-    console.log("Connected to WebSocket >>D");
-  };
-
-  const onError = (error: any) => {
-    console.warn("MẸ KEEP LẠI LỖI! 3==D", error);
-  };
 
   const getMessagesInConversation = async (userId: string) => {
     try {
@@ -84,11 +73,25 @@ const ChatWindow = () => {
   }, [messages]);
 
   const handleSendMessage = (recipientId: string, content: string) => {
-    const newMessage = {
-      recipientId,
-      content,
-    };
-    toast("Sending message..." + JSON.stringify(newMessage));
+    const client: any = new Client({
+      brokerURL: "ws://localhost:8080/ws",
+      connectHeaders: {},
+      debug: () => console.log("LOL"),
+      reconnectDelay: 5000,
+      onConnect: () => {
+        client.publish({
+          destination: "/app/chat",
+          body: JSON.stringify({
+            recipientId,
+            content,
+          }),
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected");
+      },
+    });
+    client.activate();
   };
 
   useEffect(() => {
