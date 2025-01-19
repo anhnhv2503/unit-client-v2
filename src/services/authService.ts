@@ -1,3 +1,4 @@
+import { RegisterBodyType } from "@/schema/auth.schema";
 import axiosInstance from "./axiosClient";
 
 export const login = async (email: string, password: string) => {
@@ -31,15 +32,14 @@ export const logout = async () => {
   });
 };
 
-export const register = async (
-  email: string,
-  password: string,
-  confirmPasword: string
-) => {
-  return axiosInstance.post("auth/SignUp", {
-    email: email,
-    password: password,
-    confirmPassword: confirmPasword,
+export const register = async (values: RegisterBodyType) => {
+  return axiosInstance.post("user/register", {
+    email: values.email,
+    password: values.password,
+    confirmPassword: values.confirmPassword,
+    username: values.username,
+    firstName: values.firstName,
+    lastName: values.lastName,
   });
 };
 

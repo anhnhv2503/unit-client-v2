@@ -2,12 +2,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCurrentChat } from "@/services/chatService";
 import { UserProps } from "@/types";
+import { useDocumentTitle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
   const [chattingUsers, setChattingUsers] = useState<UserProps[]>([]);
   const nav = useNavigate();
+
+  useDocumentTitle("Message - UNIT");
 
   const getChats = async () => {
     try {

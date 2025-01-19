@@ -38,9 +38,7 @@ const Sidebar = () => {
         >
           <a className="flex items-center justify-center cursor-pointer relative">
             <BellIcon className="w-7 h-7" />
-            {/* <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center transform translate-x-2 -translate-y-2">
-              {messages.length}
-            </span> */}
+            <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-3 w-3 flex items-center justify-center transform translate-x-2 -translate-y-2"></span>
           </a>
         </li>
         <li

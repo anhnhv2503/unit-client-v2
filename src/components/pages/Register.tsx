@@ -22,6 +22,7 @@ import { useDocumentTitle } from "@uidotdev/usehooks";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Register = () => {
   useDocumentTitle("Sign Up");
@@ -58,6 +59,9 @@ const Register = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      username: "",
+      firstName: "",
+      lastName: "",
     },
   });
 
@@ -68,23 +72,26 @@ const Register = () => {
   async function onSubmit(values: RegisterBodyType) {
     setLoading(true);
     try {
-      await register(values.email, values.password, values.confirmPassword);
-
-      nav(`/confirm?email=${values.email}`);
+      await register(values);
+      toast.success(
+        "Account created successfully. Please check your email to confirm your account."
+      );
+      form.reset();
       setLoading(false);
+      setTimeout(() => {
+        nav("/login");
+      }, 3000);
     } catch (error) {
       console.log(error);
       const errorMessage =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (error as any)?.response?.data?.Message || "An unknown error occurred";
+        (error as any)?.response?.data?.message || "An unknown error occurred";
       setError(errorMessage);
       setLoading(false);
     }
   }
   return (
-    <div
-      className={`flex min-h-full max-h-screen flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 bg-gradient-to-r from-purple-500 to-pink-500 h-screen`}
-    >
+    <div className="flex min-h-full max-h-screen flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 bg-gradient-to-r from-purple-500 to-pink-500 h-screen">
+      {/* Back Button */}
       <div className="absolute top-4 left-4">
         <Button
           onClick={() => nav("/login")}
@@ -93,13 +100,64 @@ const Register = () => {
           <ArrowLeftIcon className="w-6 h-6" />
         </Button>
       </div>
-      <div className="w-full max-w-md p-8 space-y-4 bg-white shadow-md rounded-lg">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">
+
+      {/* Form Container */}
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-white shadow-md rounded-lg">
+        <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-gray-900">
           SIGN UP
         </h2>
-        <div className="space-y-3">
+
+        {/* Form */}
+        <div className="space-y-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6 sm:space-y-8"
+            >
+              <div className="flex space-x-4">
+                {/* First Name */}
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="dark:text-black">
+                        First Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="First Name"
+                          {...field}
+                          className="text-black"
+                        />
+                      </FormControl>
+                      <FormMessage className="dark:text-red-600" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Last Name */}
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="dark:text-black">
+                        Last Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Last Name"
+                          {...field}
+                          className="text-black"
+                        />
+                      </FormControl>
+                      <FormMessage className="dark:text-red-600" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
@@ -117,6 +175,27 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+
+              {/* Username */}
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="dark:text-black">Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Username"
+                        {...field}
+                        className="text-black"
+                      />
+                    </FormControl>
+                    <FormMessage className="dark:text-red-600" />
+                  </FormItem>
+                )}
+              />
+
+              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
@@ -130,8 +209,8 @@ const Register = () => {
                         type={showPassword ? "text" : "password"}
                         {...field}
                         onChange={(e) => {
-                          field.onChange(e); // react-hook-form handler
-                          handlePasswordChange(e.target.value); // update UI feedback
+                          field.onChange(e);
+                          handlePasswordChange(e.target.value);
                         }}
                       />
                     </FormControl>
@@ -140,6 +219,7 @@ const Register = () => {
                 )}
               />
 
+              {/* Password Rules */}
               <ul className="text-sm mt-0">
                 {passwordRules.map((rule, index) => (
                   <li
@@ -159,6 +239,7 @@ const Register = () => {
                 ))}
               </ul>
 
+              {/* Confirm Password */}
               <FormField
                 control={form.control}
                 name="confirmPassword"
@@ -179,6 +260,8 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+
+              {/* Show Password */}
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="showPassword"
@@ -192,24 +275,28 @@ const Register = () => {
                   Show Password
                 </label>
               </div>
+
+              {/* Error Message */}
               {error && (
-                <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-red-500 dark:text-red-500">
+                <div className="text-sm font-medium leading-none text-red-500 dark:text-red-500">
                   <p>{error}</p>
                 </div>
               )}
 
+              {/* Submit Button */}
               {loading ? (
                 <SmallLoading />
               ) : (
-                <Button className="w-full p-6 dark:bg-black dark:text-white dark:hover:bg-zinc-500">
+                <Button className="w-full py-3 dark:bg-black dark:text-white dark:hover:bg-zinc-500">
                   Sign Up
                 </Button>
               )}
             </form>
           </Form>
 
-          <p className="text-center dark:text-black">
-            Already have account ? {""}
+          {/* Already Have Account */}
+          <p className="text-center text-sm dark:text-black">
+            Already have an account?{" "}
             <a
               className="cursor-pointer bg-gradient-to-r from-purple-500 to-pink-500 inline-block text-transparent bg-clip-text"
               onClick={() => {

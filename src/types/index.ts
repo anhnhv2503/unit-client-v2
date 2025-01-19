@@ -48,3 +48,13 @@ export interface UserProps {
   createdAt: string;
   role: string;
 }
+
+export type CommentProps = {
+  id: number;
+  content: string;
+  createdAt: string;
+  authorName: string;
+  authorAvatar: string;
+  postId: number;
+  authorId: number;
+};

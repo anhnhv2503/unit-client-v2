@@ -5,19 +5,21 @@ export const getCommentsByPostId = async (
   pageParam: number
 ) => {
   const token = JSON.parse(localStorage.getItem("accessToken") || "{}");
-  return axiosInstance.get(
-    `post/${postId}/comments?orderBy=createdAt desc&pageNumber=${pageParam}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return axiosInstance.get(`comments/post/${postId}?page=${pageParam}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
-export const createComment = async (postId: string | undefined, data: any) => {
+export const createComment = async (
+  postId: string | undefined,
+  content: string
+) => {
   const token = JSON.parse(localStorage.getItem("accessToken") || "{}");
-  return axiosInstance.post(`post/${postId}/comment`, data, {
+  const formData = new FormData();
+  formData.append("content", content);
+  return axiosInstance.post(`comments/create/${postId}`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

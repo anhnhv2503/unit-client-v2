@@ -111,7 +111,7 @@ const CreatePostModal = ({
     const formData = new FormData();
     formData.append("content", content);
     images.forEach((image) => {
-      formData.append("media", image);
+      formData.append("files", image);
     });
 
     try {
@@ -154,12 +154,6 @@ const CreatePostModal = ({
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="">
-          <div className="flex items-center mb-2 ">
-            <Avatar className="w-10 h-10 rounded-full mr-2 no-nav">
-              <AvatarImage src={avatar || fakeAvt} alt="@UserAvatar" />
-              <AvatarFallback></AvatarFallback>
-            </Avatar>
-          </div>
           <div className=" items-center">
             <Textarea
               placeholder="How are you feeling today?"
@@ -173,6 +167,9 @@ const CreatePostModal = ({
             <label
               htmlFor="images"
               className="cursor-pointer dark:text-white text-black"
+              onClick={() => {
+                toast.info("Image upload is not available yet.");
+              }}
             >
               <PhotoIcon
                 aria-hidden="true"
@@ -187,6 +184,7 @@ const CreatePostModal = ({
               onChange={handleMediaChange}
               multiple
               accept="*"
+              disabled
             />
             <div
               className="mt-4 flex space-x-4 overflow-x-auto p-2 no-scrollbar cursor-grab no-nav"

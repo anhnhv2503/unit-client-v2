@@ -11,7 +11,7 @@ export const getPosts = async (pageParam: number) => {
 
 export const createPost = async (data: object) => {
   const token = JSON.parse(localStorage.getItem("accessToken") || "{}");
-  return axiosInstance.post("/post", data, {
+  return axiosInstance.post("posts/create", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,14 +27,11 @@ export const refreshTokens = async () => {
 
 export const getPostByUserId = async (userId: string, pageParam: number) => {
   const token = JSON.parse(localStorage.getItem("accessToken") || "{}");
-  return axiosInstance.get(
-    `/post?userId=${userId}&size=10&pageNumber=${pageParam}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return axiosInstance.get(`posts/user/post/${userId}/${pageParam}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const getPostDetail = async (postId: string) => {

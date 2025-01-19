@@ -3,7 +3,10 @@ import z from "zod";
 //Use for Register form
 export const RegisterBody = z
   .object({
+    firstName: z.string().max(255),
+    lastName: z.string().max(255),
     email: z.string().email(),
+    username: z.string().max(255),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" })
