@@ -11,8 +11,11 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import { CreatePost } from "../common/CreatePost";
+import { Button } from "@/components/ui/button";
+import EditProfile from "@/components/common/EditProfile";
+import { toast } from "sonner";
 
-export const UserProfile = () => {
+export const UserProfile: React.FC<UserProfileProps> = () => {
   useDocumentTitle("Profile - UNIT");
   const { id } = useParams();
   const { ref, inView } = useInView();
@@ -26,6 +29,12 @@ export const UserProfile = () => {
     avatar: "",
     createdAt: "",
   });
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  const closeModal = () => setModalOpen(false);
 
   const decodedToken = jwtDecode<{ id: string }>(
     localStorage.getItem("accessToken")!
@@ -35,20 +44,7 @@ export const UserProfile = () => {
   const getUserProfileData = async () => {
     try {
       const response = await getOtherUserProfile(id!);
-      const profileData = response.data;
-      if (!profileData.ProfilePicture) {
-        setUser({
-          ...profileData,
-          ProfilePicture: "https://github.com/shadcn.png",
-        });
-      } else {
-        setUser({
-          ...profileData,
-          ProfilePicture: `${
-            profileData.ProfilePicture
-          }?t=${new Date().getTime()}`, // Add timestamp
-        });
-      }
+      setUser(response.data);
     } catch (err) {
       console.error("Failed to fetch user profile:", err);
     }
@@ -105,6 +101,10 @@ export const UserProfile = () => {
     });
   });
 
+  const handleSendMessage = () => {
+    toast.info("Feature not implemented yet");
+  };
+
   return (
     <div className="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 dark:bg-black bg-white h-screen overflow-y-scroll no-scrollbar">
       <div className="h-full w-4/5 lg:w-2/5">
@@ -130,6 +130,24 @@ export const UserProfile = () => {
                 />
                 <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
               </Avatar>
+            </div>
+            <div className="w-full mt-4">
+              {isMyProfile ? (
+                <Button onClick={openModal} className="w-full">
+                  Edit Profile
+                </Button>
+              ) : (
+                <Button className="w-full" onClick={handleSendMessage}>
+                  Message
+                </Button>
+              )}
+              {isModalOpen && (
+                <EditProfile
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  initialData={user}
+                />
+              )}
             </div>
           </div>
         </div>

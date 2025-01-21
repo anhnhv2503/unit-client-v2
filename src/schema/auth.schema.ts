@@ -110,9 +110,11 @@ export const UserProfileBody = z
       .string()
       .max(255)
       .regex(/^\S*$/, "Username must not contain spaces"), // No spaces allowed
-    phonenumber: z.string().max(10),
-    dateofbirth: z.string().max(100),
-    bio: z.string().max(255),
+    email: z.string().email(),
+    firstName: z.string().max(255),
+    lastName: z.string().max(255),
+    dateOfBirth: z.string().max(255),
+    avatar: z.string().max(255),
   })
   .strict();
 
