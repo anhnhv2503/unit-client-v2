@@ -6,10 +6,16 @@ import {
   MagnifyingGlassIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const nav = useNavigate();
+
+  const decodedToken = jwtDecode<{ id: string }>(
+    localStorage.getItem("accessToken")!
+  );
+  const currentUserId = decodedToken.id;
 
   return (
     <div className="dark:bg-black bg-white dark:text-white text-black sm:w-16 w-full sm:h-screen h-16 fixed sm:left-0 bottom-0 flex sm:flex-col flex-row sm:justify-between items-center">
@@ -42,9 +48,9 @@ const Sidebar = () => {
           </a>
         </li>
         <li
-          // onClick={() => {
-          //   nav(`/`);
-          // }}
+          onClick={() => {
+            nav(`/user-profile/${currentUserId}`);
+          }}
           className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
         >
           <a className="flex items-center justify-center cursor-pointer">

@@ -3,7 +3,7 @@ import { Post } from "@/components/common/Post";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getOtherUserProfile } from "@/services/authService";
 import { getPostByUserId } from "@/services/postService";
-import { PostProps } from "@/types";
+import { PostProps, UserProfileProps } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useDocumentTitle } from "@uidotdev/usehooks";
 import { jwtDecode } from "jwt-decode";
@@ -11,17 +11,6 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import { CreatePost } from "../common/CreatePost";
-
-type UserProfileProps = {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  avatar: string;
-  createdAt: string;
-};
 
 export const UserProfile = () => {
   useDocumentTitle("Profile - UNIT");
@@ -150,7 +139,7 @@ export const UserProfile = () => {
               <CreatePost avatar={user.avatar} onRefresh={refetch} />
             )}
           </div>
-          {content}
+          <div className="pb-20">{content}</div>
         </div>
       </div>
     </div>

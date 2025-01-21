@@ -7,29 +7,13 @@ import {
   getAllNotifications,
   isSeenNotification,
 } from "@/services/notificationService";
+import { NotificationProps } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "../common/loading/Loading";
 import { useWebSocket } from "../context/NotificationProvider";
 import { Button } from "../ui/button";
-interface NotificationProps {
-  id: string; // Unique identifier (e.g., a UUID)
-  isSeen: boolean;
-  actionType: string;
-  userName: string;
-  postId?: string;
-  userId?: string;
-  pictureProfile?: string;
-  createdAt: string; // ISO string for sorting
-  metadata: {
-    userName: string;
-    profilePicture: string;
-    lastestActionUserId: string;
-  };
-  ownerId: string;
-  affectedObjectId: string;
-}
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);

@@ -23,6 +23,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [index, setIndex] = useState(0);
   const nav = useNavigate();
+  const [isScaling, setIsScaling] = useState(false);
 
   const processMedia = (media: string[]): MediaItem[] => {
     return media.map((url) => ({
@@ -85,7 +86,8 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
     setIsLiked((prev) => !prev);
 
     try {
-      const res = await likeOrUnlikePost(post.id);
+      setIsScaling(true);
+      await likeOrUnlikePost(post.id);
       if (isLiked) {
         likeRef.current -= 1;
         setLikeCount(likeRef.current);
@@ -93,6 +95,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
         likeRef.current += 1;
         setLikeCount(likeRef.current);
       }
+      setTimeout(() => setIsScaling(false), 200);
       onRefresh?.();
     } catch (error) {
       console.error(error);
@@ -115,10 +118,6 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
     if (!(e.target as HTMLElement).closest(".no-nav")) {
       nav(`/post?postId=${post.id}`);
     }
-  };
-
-  const handleSharePost = () => {
-    toast.success("Post shared to your newsfeed!");
   };
 
   const calculateTime = (date: string) => {
@@ -154,7 +153,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
       {...props}
     >
       <div
-        className="bg-white dark:bg-zinc-800 p-4 shadow  border cursor-pointer rounded-2xl hover:shadow-lg hover:scale-[1.02] transition-transform duration-300 ease-in-out"
+        className="bg-white dark:bg-zinc-800 p-4 shadow  border cursor-pointer rounded-2xl hover:shadow-lg hover:scale-[1.005] transition-transform duration-300 ease-in-out"
         onClick={handleMainClick}
       >
         <div className="flex items-center mb-2 ">
@@ -224,7 +223,9 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
             <HeartIcon
               onClick={handleLike}
               aria-hidden="true"
-              className="h-6 w-6 mr-1 cursor-pointer no-nav"
+              className={`h-6 w-6 mr-1 cursor-pointer no-nav transition-transform duration-200 ${
+                isScaling ? "scale-125" : "scale-100"
+              } ${isLiked ? "fill-red-500 text-red-500" : "fill-none"}`}
               {...(isLiked ? { fill: "red", color: "red" } : { fill: "none" })}
             />
             {likeCount}
@@ -241,13 +242,6 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
               <ChatBubbleOvalLeftIcon className="h-6 w-6 mr-1 cursor-pointer" />
               {post.commentsCount}
             </div>
-          </div>
-          <div className="flex items-center p-1 mr-3 no-nav transition rounded-xl hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none hover:bg-slate-100 hover:rounded-xl dark:hover:bg-zinc-700 dark:hover:text-white">
-            <PaperAirplaneIcon
-              aria-hidden="true"
-              className="h-6 w-6 mr-1 cursor-pointer no-nav"
-              onClick={handleSharePost}
-            />
           </div>
         </div>
       </div>

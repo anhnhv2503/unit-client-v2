@@ -39,7 +39,7 @@ const Reply: React.FC<CommentProps> = ({
   };
   return (
     <div
-      className="bg-white dark:bg-zinc-800 p-4 shadow border dark:border-b-gray-500 rounded-e"
+      className="bg-white dark:bg-zinc-800 p-4 shadow border dark:border-b-gray-500 rounded-xl my-2"
       key={id}
     >
       <div className="flex items-top mb-2">

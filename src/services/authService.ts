@@ -63,9 +63,7 @@ export const updateProfile = async (form: FormData) => {
 };
 
 export const searchUser = async (searchKey: string) => {
-  return axiosInstance.get(
-    `user?username=${searchKey}&fields=UserName,ProfilesPicture,Bio,UserId`
-  );
+  return axiosInstance.get(`user/search?username=${searchKey}`);
 };
 
 export const getAuthUserProfile = async () => {

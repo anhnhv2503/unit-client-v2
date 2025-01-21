@@ -58,3 +58,44 @@ export type CommentProps = {
   postId: number;
   authorId: number;
 };
+
+export type SearchProps = {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  avatar: string;
+  createdAt: string;
+  role: string;
+};
+
+export type UserProfileProps = {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  avatar: string;
+  createdAt: string;
+};
+
+export interface NotificationProps {
+  id: string; // Unique identifier (e.g., a UUID)
+  isSeen: boolean;
+  actionType: string;
+  userName: string;
+  postId?: string;
+  userId?: string;
+  pictureProfile?: string;
+  createdAt: string; // ISO string for sorting
+  metadata: {
+    userName: string;
+    profilePicture: string;
+    lastestActionUserId: string;
+  };
+  ownerId: string;
+  affectedObjectId: string;
+}
