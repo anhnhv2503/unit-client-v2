@@ -13,3 +13,7 @@ export const sendMessage = async (conversationId: number, content: string) => {
     content: content,
   });
 };
+
+export const createChatIfNotExists = async (userId: string) => {
+  return axiosInstance.post(`chat/create/new-chat/${userId}`);
+};

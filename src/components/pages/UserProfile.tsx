@@ -1,7 +1,10 @@
+import EditProfile from "@/components/common/EditProfile";
 import Loading from "@/components/common/loading/Loading";
 import { Post } from "@/components/common/Post";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { getOtherUserProfile } from "@/services/authService";
+import { createChatIfNotExists } from "@/services/chatService";
 import { getPostByUserId } from "@/services/postService";
 import { PostProps, UserProfileProps } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -9,11 +12,8 @@ import { useDocumentTitle } from "@uidotdev/usehooks";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CreatePost } from "../common/CreatePost";
-import { Button } from "@/components/ui/button";
-import EditProfile from "@/components/common/EditProfile";
-import { toast } from "sonner";
 
 export const UserProfile: React.FC<UserProfileProps> = () => {
   useDocumentTitle("Profile - UNIT");
@@ -30,6 +30,7 @@ export const UserProfile: React.FC<UserProfileProps> = () => {
     createdAt: "",
   });
   const [isModalOpen, setModalOpen] = useState(false);
+  const nav = useNavigate();
 
   const openModal = () => {
     setModalOpen(true);
@@ -88,6 +89,13 @@ export const UserProfile: React.FC<UserProfileProps> = () => {
   const isMyProfile = parseInt(currentUserId) === parseInt(id!);
 
   const content = data.pages.map((page) => {
+    if (page.data?.content.length === 0) {
+      return (
+        <div className="text-center text-gray-500 dark:text-white mt-4">
+          No posts yet
+        </div>
+      );
+    }
     return page.data?.content.map((post: PostProps) => {
       const currentPost = { ...post, profilePicture: user.avatar };
       return (
@@ -101,8 +109,15 @@ export const UserProfile: React.FC<UserProfileProps> = () => {
     });
   });
 
-  const handleSendMessage = () => {
-    toast.info("Feature not implemented yet");
+  const handleSendMessage = async () => {
+    try {
+      const response = await createChatIfNotExists(id!);
+      if (response.status === 200) {
+        nav(`/chat/c/d/${id}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
