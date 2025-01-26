@@ -8,7 +8,6 @@ import { UserProfileProps } from "@/types";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Avatar } from "@radix-ui/react-avatar";
 import { User2Icon } from "lucide-react";
 import React, { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -59,20 +58,19 @@ const EditProfile: React.FC<EditProfileModalProps> = ({
   async function onSubmit(values: UserProfileBodyType) {
     setLoading(true);
     try {
-      // const formdata = new FormData();
-      // formdata.append("username", values.username);
-      // formdata.append("email", values.email);
-      // formdata.append("firstName", values.firstName);
-      // formdata.append("lastName", values.lastName);
-      // formdata.append("imageFile", selectedImage!);
+      const formdata = new FormData();
+      formdata.append("username", values.username);
+      formdata.append("email", values.email);
+      formdata.append("firstName", values.firstName);
+      formdata.append("lastName", values.lastName);
+      formdata.append("imageFile", selectedImage!);
 
-      // const response = await updateProfile(formdata);
-      // if (response.status === 200) {
-      //   setLoading(false);
-      //   toast.success("Profile Updated");
-      //   onClose();
-      // }
-      console.log(values);
+      const response = await updateProfile(formdata);
+      if (response.status === 200) {
+        setLoading(false);
+        toast.success("Profile Updated");
+        onClose();
+      }
     } catch (error) {
       console.log(error);
     }

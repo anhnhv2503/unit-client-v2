@@ -113,8 +113,6 @@ export const UserProfileBody = z
     email: z.string().email(),
     firstName: z.string().max(255),
     lastName: z.string().max(255),
-    dateOfBirth: z.string().max(255),
-    avatar: z.string().max(255),
   })
   .strict();
 

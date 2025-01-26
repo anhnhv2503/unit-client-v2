@@ -59,7 +59,7 @@ export const getOtherUserProfile = async (user_id: string) => {
 };
 
 export const updateProfile = async (form: FormData) => {
-  return axiosInstance.post("user", form);
+  return axiosInstance.post("user/update", form);
 };
 
 export const searchUser = async (searchKey: string) => {
