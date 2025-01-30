@@ -35,7 +35,7 @@ const Search = () => {
   }, [inputSearchDebounced, fetchSearchUsers]);
 
   return (
-    <div className="flex flex-col items-center px-6 py-12 lg:px-8 min-h-screen dark:bg-black bg-white overflow-y-scroll no-scrollbar">
+    <div className="flex flex-col items-center px-6 py-12 lg:px-8 min-h-screen dark:bg-neutral-950 bg-white overflow-y-scroll no-scrollbar">
       <div className="w-full flex justify-center mt-10">
         <div className="flex max-w-lg w-full items-center space-x-2">
           <Input
@@ -54,7 +54,7 @@ const Search = () => {
           {data.map((member, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg shadow p-4 mb-4 flex items-center text-black cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-transform duration-300 ease-in-out"
+              className="bg-white dark:bg-zinc-800 rounded-lg shadow p-4 mb-4 flex items-center text-black cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-transform duration-300 ease-in-out"
               onClick={() => nav(`/user-profile/${member.id}`)}
             >
               <img
@@ -63,7 +63,7 @@ const Search = () => {
                 alt={member.avatar}
               />
               <div>
-                <div className="text-lg font-semibold">
+                <div className="text-lg font-semibold dark:text-white text-black">
                   {member.firstName} {member.lastName}
                 </div>
                 <div className="text-gray-500">{member.email}</div>

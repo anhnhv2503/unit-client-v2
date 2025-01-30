@@ -106,14 +106,17 @@ const ChatWindow = () => {
     }
   }, [messages]);
 
+  const shouldShowTimestamp = (index: number) => {
+    if (index === 0) return true; // Always show timestamp for first message
+    const prevMessageTime = moment(messages[index - 1].createdAt);
+    const currentMessageTime = moment(messages[index].createdAt);
+    return currentMessageTime.diff(prevMessageTime, "hours") >= 1;
+  };
+
   return (
     <Card className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto mt-20">
       <div className="">
-        <Button
-          variant={"outline"}
-          onClick={() => nav(-1)}
-          className="p-2 border rounded-full"
-        >
+        <Button variant={"ghost"} onClick={() => nav(-1)} className="p-2">
           <ArrowLeft className="h-6 w-6" />
         </Button>
       </div>
@@ -141,26 +144,35 @@ const ChatWindow = () => {
       <CardContent className="flex-grow overflow-hidden p-4">
         <ScrollArea className="h-full pr-4">
           {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex mb-4 ${
-                message.senderId == senderId ? "justify-end" : "justify-start"
-              }`}
-            >
+            <div key={message.id} className="flex flex-col">
+              {/* Show timestamp if message is 1 hour apart */}
+              {shouldShowTimestamp(index) && (
+                <div className="text-center text-gray-500 text-sm my-2">
+                  {moment(message.createdAt).format("h:mm A")}
+                </div>
+              )}
+
               <div
-                className={`max-w-[85%] rounded-2xl p-3 ${
-                  message.senderId == senderId
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                className={`flex mb-4 ${
+                  message.senderId == senderId ? "justify-end" : "justify-start"
                 }`}
               >
-                <p className="text-sm">{message.content}</p>
-                <p className="text-xs text-gray-500">
-                  {moment(message.createdAt).format("YYYY-MM-DD, h:mm:ss A")}
-                </p>
+                <div
+                  className={`max-w-[85%] rounded-2xl p-3 ${
+                    message.senderId == senderId
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
+                  }`}
+                >
+                  <p className="text-sm">{message.content}</p>
+                  <p className="text-xs text-gray-500">
+                    {moment(message.createdAt).format("YYYY-MM-DD, h:mm:ss A")}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
           <div ref={messagesEndRef} />
         </ScrollArea>
       </CardContent>

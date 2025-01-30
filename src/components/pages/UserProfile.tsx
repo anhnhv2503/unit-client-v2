@@ -15,7 +15,7 @@ import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import { CreatePost } from "../common/CreatePost";
 
-export const UserProfile: React.FC<UserProfileProps> = () => {
+export const UserProfile = () => {
   useDocumentTitle("Profile - UNIT");
   const { id } = useParams();
   const { ref, inView } = useInView();
@@ -89,13 +89,6 @@ export const UserProfile: React.FC<UserProfileProps> = () => {
   const isMyProfile = parseInt(currentUserId) === parseInt(id!);
 
   const content = data.pages.map((page) => {
-    if (page.data?.content.length === 0) {
-      return (
-        <div className="text-center text-gray-500 dark:text-white mt-4">
-          No posts yet
-        </div>
-      );
-    }
     return page.data?.content.map((post: PostProps) => {
       const currentPost = { ...post, profilePicture: user.avatar };
       return (
@@ -121,7 +114,7 @@ export const UserProfile: React.FC<UserProfileProps> = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 dark:bg-black bg-white h-screen overflow-y-scroll no-scrollbar">
+    <div className="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 dark:bg-neutral-950 bg-white h-screen overflow-y-scroll no-scrollbar">
       <div className="h-full w-4/5 lg:w-2/5">
         <div className="max-w-2xl mt-4">
           <div className="bg-white p-4 rounded-lg border dark:bg-zinc-800">

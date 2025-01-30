@@ -2,11 +2,7 @@ import ImagePreview from "@/components/common/ImagePreview";
 import { likeOrUnlikePost } from "@/services/postService";
 import { MediaItem, PostProp } from "@/types";
 
-import {
-  ChatBubbleOvalLeftIcon,
-  HeartIcon,
-  PaperAirplaneIcon,
-} from "@heroicons/react/24/outline";
+import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { FC, MouseEvent, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -95,7 +91,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
         likeRef.current += 1;
         setLikeCount(likeRef.current);
       }
-      setTimeout(() => setIsScaling(false), 200);
+      setTimeout(() => setIsScaling(false), 50);
       onRefresh?.();
     } catch (error) {
       console.error(error);
@@ -153,7 +149,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
       {...props}
     >
       <div
-        className="bg-white dark:bg-zinc-800 p-4 shadow  border cursor-pointer rounded-2xl hover:shadow-lg hover:scale-[1.005] transition-transform duration-300 ease-in-out"
+        className="bg-white dark:bg-zinc-800 p-4 shadow  border cursor-pointer rounded-2xl hover:shadow-lg transition-transform duration-300 ease-in-out"
         onClick={handleMainClick}
       >
         <div className="flex items-center mb-2 ">
@@ -223,9 +219,11 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
             <HeartIcon
               onClick={handleLike}
               aria-hidden="true"
-              className={`h-6 w-6 mr-1 cursor-pointer no-nav transition-transform duration-200 ${
+              className={`h-8 w-8 mr-1 cursor-pointer no-nav transition-transform duration-200 ${
                 isScaling ? "scale-125" : "scale-100"
-              } ${isLiked ? "fill-red-500 text-red-500" : "fill-none"}`}
+              } ${
+                isLiked ? "fill-rose-400 text-rose-400 bg-gradi" : "fill-none"
+              }`}
               {...(isLiked ? { fill: "red", color: "red" } : { fill: "none" })}
             />
             {likeCount}
@@ -239,7 +237,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
             }}
           >
             <div className="flex items-center">
-              <ChatBubbleOvalLeftIcon className="h-6 w-6 mr-1 cursor-pointer" />
+              <ChatBubbleOvalLeftIcon className="h-8 w-8 mr-1 cursor-pointer" />
               {post.commentsCount}
             </div>
           </div>

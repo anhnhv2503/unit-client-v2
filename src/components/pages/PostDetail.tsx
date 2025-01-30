@@ -96,7 +96,7 @@ export const PostDetail = () => {
   });
 
   return (
-    <div className="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 dark:bg-black bg-white h-full overflow-y-scroll no-scrollbar">
+    <div className="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8 dark:bg-neutral-950 bg-white h-full overflow-y-scroll no-scrollbar">
       <div className="h-full w-4/5 lg:w-2/5">
         <div className="max-w-2xl mt-4">
           <div className="top-4 left-4">
@@ -114,7 +114,7 @@ export const PostDetail = () => {
           <div className="">
             <Post post={post} />
             <div className="max-w-3xl mt-2 rounded-3xl w-full">
-              <div className="bg-white dark:bg-black p-4 shadow rounded-3xl">
+              <div className="bg-white dark:bg-neutral-900 p-4 shadow rounded-3xl">
                 <form onSubmit={handleComment} className="flex flex-col gap-4">
                   <Textarea
                     className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:text-gray-300"

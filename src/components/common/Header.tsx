@@ -39,7 +39,7 @@ const Header = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
-    <header className="dark:bg-black bg-white fixed top-0 left-0 right-0 z-10 ">
+    <header className="dark:bg-neutral-950 bg-white fixed top-0 left-0 right-0 z-10 ">
       <nav
         aria-label="Global"
         className="mx-auto flex max-w-7xl items-center justify-between p-2 lg:px-8 "

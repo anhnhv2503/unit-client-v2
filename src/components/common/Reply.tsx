@@ -8,7 +8,6 @@ const Reply: React.FC<CommentProps> = ({
   createdAt,
   authorName,
   authorAvatar,
-  postId,
   authorId,
 }) => {
   const nav = useNavigate();
@@ -55,7 +54,7 @@ const Reply: React.FC<CommentProps> = ({
             className="font-semibold dark:text-white cursor-pointer"
             onClick={() => nav(`/user-profile/${authorId}`)}
           >
-            <span className="hover:text-indigo-400">{authorName} </span>
+            <span className="hover:text-gray-400">{authorName} </span>
             <span className="text-sm text-gray-500 font-normal">
               {calculateTime(createdAt)}
             </span>
