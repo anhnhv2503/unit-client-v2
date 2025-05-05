@@ -1,4 +1,12 @@
 import ModePopover from "@/components/common/ModePopover";
+import { useTheme } from "@/components/context/theme-provider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import {
   BellIcon,
   ChatBubbleOvalLeftIcon,
@@ -7,70 +15,118 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const nav = useNavigate();
+  const location = useLocation();
+  const [activeItem, setActiveItem] = useState("/");
+  const [notificationCount, setNotificationCount] = useState(3);
 
+  // Decode token and get user ID
   const decodedToken = jwtDecode<{ id: string }>(
     localStorage.getItem("accessToken")!
   );
   const currentUserId = decodedToken.id;
 
-  return (
-    <div className="dark:bg-neutral-950 bg-white dark:text-white text-black sm:w-16 w-full sm:h-screen h-16 fixed sm:left-0 bottom-0 flex sm:flex-col flex-row sm:justify-between items-center">
-      <ul className="flex sm:flex-col flex-row sm:space-y-6 space-y-0 sm:space-x-0 space-x-6 sm:items-center items-center justify-center w-full sm:mt-auto sm:mb-auto">
-        <li
-          onClick={() => nav("/")}
-          className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
-        >
-          <a className="flex items-center justify-center cursor-pointer">
-            <HomeIcon className="w-7 h-7" />
-          </a>
-        </li>
-        <li
-          onClick={() => nav("/search")}
-          className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
-        >
-          <a className="flex items-center justify-center cursor-pointer">
-            <MagnifyingGlassIcon className="w-7 h-7" />
-          </a>
-        </li>
-        <li
-          // onClick={() => {
-          //   nav("/notify"); // Navigate to the notifications page
-          // }}
-          className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
-        >
-          <a className="flex items-center justify-center cursor-pointer relative">
-            <BellIcon className="w-7 h-7" />
-            <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-3 w-3 flex items-center justify-center transform translate-x-2 -translate-y-2"></span>
-          </a>
-        </li>
-        <li
-          onClick={() => {
-            nav(`/user-profile/${currentUserId}`);
-          }}
-          className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
-        >
-          <a className="flex items-center justify-center cursor-pointer">
-            <UserIcon className="w-7 h-7" />
-          </a>
-        </li>
-        <li
-          onClick={() => {
-            nav(`/chat`);
-          }}
-          className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none"
-        >
-          <a className="flex items-center justify-center cursor-pointer">
-            <ChatBubbleOvalLeftIcon className="w-7 h-7" />
-          </a>
-        </li>
-      </ul>
+  // Update active item based on current location
+  useEffect(() => {
+    setActiveItem(location.pathname);
+  }, [location]);
 
-      <ul className="hidden sm:flex sm:flex-col sm:space-y-4 sm:items-center sm:mb-4 ">
-        <li className="p-2 sm:p-4 hover:bg-gray-300 hover:text-zinc-800 rounded-lg transition hover:ease-out motion-reduce:transition-none motion-reduce:hover:transform-none">
+  // Mock function to fetch notification count - replace with actual API call
+  useEffect(() => {
+    // Example: In a real app, this would be an API call
+    // fetchNotificationCount().then(count => setNotificationCount(count));
+  }, []);
+
+  const navItems = [
+    { path: "/", icon: HomeIcon, label: "Home" },
+    { path: "/search", icon: MagnifyingGlassIcon, label: "Search" },
+    {
+      path: "/notify",
+      icon: BellIcon,
+      label: "Notifications",
+      badge: notificationCount,
+    },
+    {
+      path: `/user-profile/${currentUserId}`,
+      icon: UserIcon,
+      label: "Profile",
+    },
+    { path: "/chat", icon: ChatBubbleOvalLeftIcon, label: "Messages" },
+  ];
+
+  return (
+    <div
+      className={cn(
+        "fixed sm:h-screen h-16 z-10 transition-all duration-300",
+        "dark:text-white text-black",
+        "sm:left-0 bottom-0 w-full sm:w-16",
+        "flex sm:flex-col flex-row",
+        "dark:bg-neutral-950 bg-white"
+      )}
+    >
+      {/* Main navigation */}
+      <TooltipProvider delayDuration={300}>
+        <ul
+          className="flex sm:flex-col flex-row sm:space-y-2 space-y-0 sm:space-x-0 space-x-1 
+                       sm:items-center items-center justify-center w-full sm:mt-auto py-1 px-1"
+        >
+          {navItems.map((item) => (
+            <Tooltip key={item.path}>
+              <TooltipTrigger asChild>
+                <li
+                  onClick={() => nav(item.path)}
+                  className={cn(
+                    "w-full rounded-lg transition-all duration-300 cursor-pointer",
+                    activeItem === item.path
+                      ? "bg-gray-100 dark:text-white text-black dark:bg-neutral-900"
+                      : "hover:bg-neutral-200 dark:hover:bg-neutral-800",
+                    "relative"
+                  )}
+                >
+                  <div className="flex items-center justify-center p-3 sm:p-4">
+                    <item.icon
+                      className={cn(
+                        "w-7 h-7",
+                        activeItem === item.path
+                          ? "text-gray-500 dark:text-gray-300"
+                          : ""
+                      )}
+                    />
+
+                    {item.badge && (
+                      <span
+                        className="absolute top-1 right-1 bg-red-500 text-white text-xs 
+                                       font-bold rounded-full flex items-center justify-center 
+                                       min-w-5 h-5 px-1 transform -translate-y-1 translate-x-1"
+                      >
+                        {item.badge > 99 ? "99+" : item.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  {activeItem === item.path && (
+                    <div
+                      className="absolute left-0 sm:left-0 sm:top-0 bottom-0 sm:h-full h-1 sm:w-1 w-full
+                              bg-gray-300 rounded-full"
+                    />
+                  )}
+                </li>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="sm:block hidden">
+                <p>{item.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </ul>
+      </TooltipProvider>
+
+      {/* Bottom settings/theme section */}
+      <ul className="hidden sm:flex sm:flex-col sm:space-y-4 sm:items-center sm:mb-4 sm:mt-auto">
+        <li className="p-2 sm:p-4 hover:bg-gray-300 dark:hover:bg-neutral-800 hover:text-zinc-800 dark:hover:text-white rounded-lg transition-all duration-300">
           <ModePopover />
         </li>
       </ul>

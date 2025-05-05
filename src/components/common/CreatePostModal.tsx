@@ -1,5 +1,4 @@
 import SmallLoading from "@/components/common/loading/SmallLoading";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,8 +14,6 @@ import { createPost } from "@/services/postService";
 import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChangeEvent, MouseEvent, useRef, useState } from "react";
 import { toast } from "sonner";
-
-const fakeAvt = `https://github.com/shadcn.png`;
 
 const CreatePostModal = ({
   title,
@@ -154,14 +151,22 @@ const CreatePostModal = ({
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="">
-          <div className=" items-center">
-            <Textarea
-              placeholder="How are you feeling today?"
-              className="w-full border border-none outline outline-none"
-              onPaste={handlePaste}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+          <div className="flex items-center gap-2 mb-4">
+            <img
+              src={avatar || "/placeholder.svg"}
+              alt="User Avatar"
+              className="w-10 h-10 rounded-full"
             />
+
+            <div className="items-center flex-1">
+              <Textarea
+                placeholder="How are you feeling today?"
+                className="w-full border border-none outline outline-none"
+                onPaste={handlePaste}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </div>
           </div>
           <div className="flex mt-3">
             <label

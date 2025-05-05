@@ -149,7 +149,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
       {...props}
     >
       <div
-        className="bg-white dark:bg-zinc-800 p-4 shadow  border cursor-pointer rounded-2xl hover:shadow-lg transition-transform duration-300 ease-in-out"
+        className="bg-white dark:bg-zinc-800 p-4 shadow  border cursor-pointer rounded-2xl transition-transform duration-300 ease-in-out"
         onClick={handleMainClick}
       >
         <div className="flex items-center mb-2 ">
