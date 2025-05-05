@@ -16,8 +16,22 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 import Chat from "@/components/pages/Chat";
 import ChatWindow from "@/components/common/ChatWindow";
 import Test from "@/test/Test";
+import { useEffect, useState } from "react";
+import AppLoading from "@/components/common/loading/AppLoading";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
+  if (isLoading) {
+    return <AppLoading />;
+  }
+
   const router = createBrowserRouter([
     {
       path: "/test",
@@ -47,36 +61,36 @@ function App() {
       element: <UserRoute />,
       children: [
         {
-          path: "/",
-          element: <Home />,
-        },
-        {
-          path: "/post",
-          element: <PostDetail />,
-        },
-
-        {
-          path: "/search",
-          element: <Search />,
-        },
-        {
-          path: "/chat",
-          element: <Chat />,
-        },
-        {
-          path: "/chat/c/d/:userId",
-          element: <ChatWindow />,
-        },
-        {
-          path: "/user-profile/:id",
-          element: <UserProfile />,
-        },
-        {
           element: <ProtectedRoute />,
           children: [
             {
               path: "/notify",
               element: <Notification />,
+            },
+            {
+              path: "/",
+              element: <Home />,
+            },
+            {
+              path: "/post",
+              element: <PostDetail />,
+            },
+
+            {
+              path: "/search",
+              element: <Search />,
+            },
+            {
+              path: "/chat",
+              element: <Chat />,
+            },
+            {
+              path: "/chat/c/d/:userId",
+              element: <ChatWindow />,
+            },
+            {
+              path: "/user-profile/:id",
+              element: <UserProfile />,
             },
           ],
         },
