@@ -1,5 +1,5 @@
-import bowLogo from "@/assets/header-logo/bow.png";
-import wobLogo from "@/assets/header-logo/wob.png";
+import bowLogo from "@/assets/header-logo/bow2.png";
+import wobLogo from "@/assets/header-logo/wob2.png";
 import ModePopover from "@/components/common/ModePopover";
 import { useTheme } from "@/components/context/theme-provider";
 import { Button } from "@/components/ui/button";

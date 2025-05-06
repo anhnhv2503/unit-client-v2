@@ -1,4 +1,6 @@
-import appLogo from "@/assets/header-logo/bow.png";
+import bowLogo from "@/assets/header-logo/bow2.png";
+import wobLogo from "@/assets/header-logo/wob2.png";
+import { useTheme } from "@/components/context/theme-provider";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -12,6 +14,7 @@ interface Particle {
 }
 
 const AppLoading = () => {
+  const { theme } = useTheme();
   const [width, setWidth] = useState(0);
   const [loadingText, setLoadingText] = useState("UNIT");
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -99,19 +102,35 @@ const AppLoading = () => {
             }}
             className="mb-8 relative"
           >
-            <motion.img
-              src={appLogo}
-              alt="logo"
-              className="w-32 h-auto"
-              animate={{
-                y: [0, -8, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
+            {theme === "dark" ? (
+              <motion.img
+                alt="Dark Theme Logo"
+                src={wobLogo}
+                className="w-32 h-auto rounded-full "
+                animate={{
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            ) : (
+              <motion.img
+                alt="Light Theme Logo"
+                src={bowLogo}
+                className="w-32 h-auto rounded-full"
+                animate={{
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            )}
             {/* Glow effect behind logo */}
             <div className="absolute -inset-4 bg-indigo-500 opacity-20 rounded-full blur-xl -z-10"></div>
           </motion.div>
