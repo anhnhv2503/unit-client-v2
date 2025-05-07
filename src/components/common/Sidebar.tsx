@@ -1,5 +1,4 @@
 import ModePopover from "@/components/common/ModePopover";
-import { useTheme } from "@/components/context/theme-provider";
 import {
   Tooltip,
   TooltipContent,
@@ -7,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { countUnseenNotification } from "@/services/notificationService";
 import {
   BellIcon,
   ChatBubbleOvalLeftIcon,
@@ -22,7 +22,7 @@ const Sidebar = () => {
   const nav = useNavigate();
   const location = useLocation();
   const [activeItem, setActiveItem] = useState("/");
-  const [notificationCount, setNotificationCount] = useState(3);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   // Decode token and get user ID
   const decodedToken = jwtDecode<{ id: string }>(
@@ -35,10 +35,16 @@ const Sidebar = () => {
     setActiveItem(location.pathname);
   }, [location]);
 
-  // Mock function to fetch notification count - replace with actual API call
+  const fetchNotificationCount = async () => {
+    try {
+      const response = await countUnseenNotification();
+      setNotificationCount(response.data);
+    } catch (error) {
+      console.error("Error fetching notification count:", error);
+    }
+  };
   useEffect(() => {
-    // Example: In a real app, this would be an API call
-    // fetchNotificationCount().then(count => setNotificationCount(count));
+    fetchNotificationCount();
   }, []);
 
   const navItems = [
@@ -48,7 +54,7 @@ const Sidebar = () => {
       path: "/notify",
       icon: BellIcon,
       label: "Notifications",
-      badge: notificationCount,
+      badge: notificationCount > 0 ? notificationCount : undefined,
     },
     {
       path: `/user-profile/${currentUserId}`,
