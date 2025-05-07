@@ -7,6 +7,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 import { FC, MouseEvent, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import sound from "@/assets/sound/likesound.mp3";
 
 const fakeAvt = `https://github.com/shadcn.png`;
 
@@ -22,6 +23,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
   const [index, setIndex] = useState(0);
   const nav = useNavigate();
   const [isScaling, setIsScaling] = useState(false);
+  const audio = new Audio(sound);
 
   const processMedia = (media: string[]): MediaItem[] => {
     return media.map((url) => ({
@@ -151,6 +153,7 @@ export const Post: FC<PostProp> = ({ post, innerRef, onRefresh, ...props }) => {
       } else {
         likeRef.current += 1;
         setLikeCount(likeRef.current);
+        audio.play();
       }
       setTimeout(() => setIsScaling(false), 50);
       onRefresh?.();

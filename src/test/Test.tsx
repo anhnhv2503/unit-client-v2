@@ -1,61 +1,43 @@
-import { Button } from "@/components/ui/button";
-import { Client } from "@stomp/stompjs";
-import { useEffect } from "react";
+import sound from "@/assets/sound/notification-sound.mp3";
+import { toast } from "sonner";
+
 const Test = () => {
-  const connectSocket = (onMessageReceived: any) => {
-    const client: any = new Client({
-      brokerURL: "ws://localhost:8080/ws",
-      connectHeaders: {},
-      debug: (str) => console.log(str),
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("Connected notification");
-        client.subscribe(`/user/notification/topic/notify`, (message: any) => {
-          try {
-            const parsedMessage = JSON.parse(message.body);
-            console.log("Body >>>>", parsedMessage);
-            onMessageReceived(parsedMessage);
-          } catch (error) {
-            console.error(error);
-            console.log(message.body);
-          }
-        });
-      },
-      onDisconnect: () => {
-        console.log("Disconnected");
+  const audio = new Audio(sound);
+
+  const handleToast = () => {
+    toast.success("This is a success toast!", {
+      duration: 3000,
+      style: {
+        backgroundColor: "#4CAF50",
+        color: "#fff",
+        fontSize: "16px",
+        padding: "10px",
+        borderRadius: "5px",
       },
     });
-    client.activate();
+    audio.play();
   };
-
-  useEffect(() => {
-    connectSocket((message: any) => {
-      console.log("Notification >>>>", message);
-    });
-  }, []);
-
-  const handleNotify = () => {
-    const client: any = new Client({
-      brokerURL: "ws://localhost:8080/ws",
-      connectHeaders: {},
-      debug: (str) => console.log(str),
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("Connected button");
-        client.publish({
-          destination: "/app/notify",
-        });
-      },
-      onDisconnect: () => {
-        console.log("Disconnected");
-      },
-    });
-    client.activate();
-  };
-
   return (
-    <div>
-      <Button onClick={() => handleNotify()}>Notification</Button>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold mb-4">Test Audio</h1>
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        onClick={() => {
+          audio.play();
+        }}
+      >
+        Play Sound
+      </button>
+      <audio controls className="mt-4">
+        <source src={sound} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <button
+        className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+        onClick={handleToast}
+      >
+        Show Toast
+      </button>
     </div>
   );
 };
