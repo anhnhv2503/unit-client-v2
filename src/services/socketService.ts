@@ -4,7 +4,7 @@ const connectSocket = (onMessageReceived: any) => {
   const client: any = new Client({
     brokerURL: "ws://localhost:8080/ws",
     connectHeaders: {},
-    debug: (str) => console.log(str),
+
     reconnectDelay: 5000,
     onConnect: () => {
       console.log("Connected");

@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { playPrimarySound } from "@/utils/audio";
 import { createPost } from "@/services/postService";
 import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChangeEvent, MouseEvent, useRef, useState } from "react";
@@ -123,6 +124,7 @@ const CreatePostModal = ({
         setTimeout(() => {
           onRefresh();
         }, 500);
+        playPrimarySound();
       }
     } catch (error) {
       console.log(error);

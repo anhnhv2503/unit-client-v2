@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { playPrimarySound } from "@/utils/audio";
 import { countUnseenNotification } from "@/services/notificationService";
 import {
   BellIcon,
@@ -14,6 +15,7 @@ import {
   MagnifyingGlassIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { Client } from "@stomp/stompjs";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,13 +26,11 @@ const Sidebar = () => {
   const [activeItem, setActiveItem] = useState("/");
   const [notificationCount, setNotificationCount] = useState(0);
 
-  // Decode token and get user ID
   const decodedToken = jwtDecode<{ id: string }>(
     localStorage.getItem("accessToken")!
   );
   const currentUserId = decodedToken.id;
 
-  // Update active item based on current location
   useEffect(() => {
     setActiveItem(location.pathname);
   }, [location]);
@@ -43,8 +43,44 @@ const Sidebar = () => {
       console.error("Error fetching notification count:", error);
     }
   };
+
   useEffect(() => {
+    const connectSocket = (callback: any) => {
+      const client = new Client({
+        brokerURL: "ws://localhost:8080/ws",
+        connectHeaders: {},
+        reconnectDelay: 5000,
+        onConnect: () => {
+          client.subscribe(
+            `/topic/unread/${currentUserId}`,
+            (newNotification: any) => {
+              try {
+                callback(newNotification.body);
+              } catch (error) {
+                console.error("Error parsing notification:", error);
+              }
+            }
+          );
+        },
+        onDisconnect: () => {
+          console.log("Disconnected from WebSocket");
+        },
+      });
+      client.activate();
+      return client;
+    };
+    const handleData = (data: any) => {
+      setNotificationCount(data);
+      playPrimarySound();
+    };
+
+    const client = connectSocket(handleData);
     fetchNotificationCount();
+    return () => {
+      if (client && client.connected) {
+        client.deactivate();
+      }
+    };
   }, []);
 
   const navItems = [

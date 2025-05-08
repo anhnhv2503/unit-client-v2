@@ -19,3 +19,7 @@ export const isSeenNotification = async (createdAt: string) => {
 export const countUnseenNotification = async () => {
   return axiosInstance.get("/notification/unread");
 };
+
+export const markAsSeen = async (id: number) => {
+  return axiosInstance.put(`/notification/seen/${id}`);
+};

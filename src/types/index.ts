@@ -82,29 +82,16 @@ export type UserProfileProps = {
   createdAt: string;
 };
 
-export type Role = {
-  roleName: string;
-};
-
-export type User = {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string; // ISO 8601 string
-  avatar: string;
-  createdAt: string; // ISO 8601 string
-  roles: Role[];
-};
-
 export type NotificationProps = {
   id: number;
   content: string;
   location: string;
-  type: "LIKE" | "COMMENT" | string; // add more types if needed
-  relatedId: number;
-  postId: number;
-  user: User;
+  type: string;
   read: boolean;
+  interactorId: number;
+  interactorName: string;
+  interactorAvatar: string;
+  postId: number;
+  createdAt: string;
+  postTitle: string;
 };
