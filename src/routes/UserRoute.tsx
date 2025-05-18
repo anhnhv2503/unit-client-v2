@@ -15,7 +15,7 @@ const UserRoute = () => {
         <div className="flex-col h-screen">
           <Sidebar />
         </div>
-        <div className="flex-1 dark:bg-neutral-950 overflow-y-auto h-fit">
+        <div className="flex-1 dark:bg-neutral-950 overflow-y-auto h-fit mt-3">
           <Outlet />
         </div>
       </div>

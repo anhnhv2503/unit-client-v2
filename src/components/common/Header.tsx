@@ -86,19 +86,12 @@ const Header = () => {
           >
             <span className="sr-only">Your Company</span>
             <div className="relative transition-all duration-300 hover:scale-105">
-              {theme === "dark" ? (
-                <img
-                  alt="Dark Theme Logo"
-                  src={wobLogo}
-                  className="h-8 w-auto cursor-pointer transition-all duration-300"
-                />
-              ) : (
-                <img
-                  alt="Light Theme Logo"
-                  src={bowLogo}
-                  className="h-8 w-auto cursor-pointer transition-all duration-300"
-                />
-              )}
+              <img
+                alt="Logo"
+                src={theme === "dark" ? wobLogo : bowLogo}
+                className="h-10 w-auto cursor-pointer transition-all duration-300 rounded-full"
+              />
+
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></div>
             </div>
           </a>
